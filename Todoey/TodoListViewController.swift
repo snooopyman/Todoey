@@ -10,9 +10,16 @@ import UIKit
 class TodoListViewController: UITableViewController {
     
     var itemArray = ["Buy Eggs", "Buy Water", "Buy Meat"]
+    
+    let defaults = UserDefaults.standard
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        //show the new items added (data persist)
+        if let items = defaults.array(forKey: "TodoListArray") as? [String] {
+            itemArray = items
+        }
         
         //navigation Bar apareance
         let appearance = UINavigationBarAppearance()
@@ -38,16 +45,17 @@ class TodoListViewController: UITableViewController {
         return cell
     }
 
+    
     //MARK: - TableView Delegate Methods
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        //un check para las row
+        //✅ for the rows
         if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark {
             tableView.cellForRow(at: indexPath)?.accessoryType = .none
         } else {
             tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
         }
         
-        //para que no se quede marcado de gris cuando hacemos tap
+        //dont stay gray when we tap on that
         tableView.deselectRow(at: indexPath, animated: true)
     }
 
@@ -62,7 +70,11 @@ class TodoListViewController: UITableViewController {
             //What will happen once the user clicks the Add Item Button on UIAlert
             //add new item to itemArray
             self.itemArray.append(textField.text ?? "New Item")
-            //recargar la vista para ver el nuevo dato añadido
+            
+            //data persist in the new array TodoListArray
+            self.defaults.set(self.itemArray, forKey: "TodoListArray")
+            
+            //reload view for see the new data
             self.tableView.reloadData()
             
         }
